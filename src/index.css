@@ -48,3 +48,12 @@ ol, ul {
 .game-info {
   margin-left: 20px;
 }
+
+.move {
+
+}
+
+.current-move {
+  /*background: darkgoldenrod;*/
+  border: blueviolet 2px solid;
+}
