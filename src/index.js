@@ -5,7 +5,7 @@ import './index.css';
 function Square(props) {
     return (
         <button
-            className="square"
+            className={props.isCurrent ? "square current-cell" : "square"}
             onClick={props.onClick}
         >
             {props.value}
@@ -14,61 +14,37 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-    /*constructor(props) {
-        super(props);
-        this.state = {
-            squares: Array(9).fill(null),
-            xIsNext: true
-        };
-    }
-
-    handleClick(i) {
-        const squares = this.state.squares.slice();
-        if (calculateWinner(squares) || squares[i]) {
-            return;
-        }
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
-        this.setState({
-            squares: squares,
-            xIsNext: !this.state.xIsNext
-        });
-    }*/
-
     renderSquare(i) {
         return (
             <Square
                 value={this.props.squares[i]}
+                isCurrent={i === this.props.stepNumber}
                 onClick={() => this.props.onClick(i)}
             />
         );
     }
 
+    renderSquareRow(i) {
+        let res = [];
+        for (let j=0; j<3; j++) {
+            res.push(this.renderSquare(i + j));
+        }
+        return (
+            <div className="board-row">
+                {res}
+            </div>
+        );
+    }
+
     render() {
-        /*const winner = calculateWinner(this.state.squares);
-        let status;
-        if (winner) {
-            status = 'Выиграл ' + winner;
-        } else {
-            status = 'Следующий ход: ' + (this.state.xIsNext ? 'X' : 'O');
-        }*/
+        let rows = [];
+        for (let i=0; i<3; i++) {
+            rows.push(this.renderSquareRow(i*3));
+        }
 
         return (
             <div>
-                <div className="board-row">
-                    {this.renderSquare(0)}
-                    {this.renderSquare(1)}
-                    {this.renderSquare(2)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(3)}
-                    {this.renderSquare(4)}
-                    {this.renderSquare(5)}
-                </div>
-                <div className="board-row">
-                    {this.renderSquare(6)}
-                    {this.renderSquare(7)}
-                    {this.renderSquare(8)}
-                </div>
+                {rows}
             </div>
         );
     }
@@ -82,6 +58,7 @@ class Game extends React.Component {
                 squares: Array(9).fill(null),
                 lastMove: {row: null, col: null}
             }],
+            historyOrder: 'a',
             stepNumber: 0,
             xIsNext: true
         };
@@ -104,7 +81,7 @@ class Game extends React.Component {
                 'Перейти к ходу #' + move + ' (' + step.lastMove.col + ', ' + step.lastMove.row  + ')':
                 'К началу игры';
             return (
-                <li key={move}>
+                <li key={move} className="move-item">
                     <button
                         className={move === this.state.stepNumber ? "current-move" : "move"}
                         onClick={() => this.jumpTo(move)}
@@ -115,17 +92,32 @@ class Game extends React.Component {
             );
         });
 
+        if (this.state.historyOrder !== 'a') {
+            moves.reverse();
+        }
+
+        const movies_order = (
+            <button
+                className="button-sort"
+                onClick={() => this.changeSortOrder()}
+            >
+                {this.state.historyOrder === 'a' ? 'По возрастанию' : 'По убыванию'}
+            </button>
+        );
+
         return (
             <div className="game">
                 <div className="game-board">
                     <Board
                         squares={current.squares}
+                        stepNumber={(current.lastMove.col - 1) + (current.lastMove.row - 1) * 3}
                         onClick={(i) => this.handleClick(i)}
                     />
                 </div>
                 <div className="game-info">
                     <div>{status}</div>
-                    <ol>{moves}</ol>
+                    <div>{movies_order}</div>
+                    <ol reversed={this.state.historyOrder !== 'a'}>{moves}</ol>
                 </div>
             </div>
         );
@@ -147,6 +139,12 @@ class Game extends React.Component {
             }]),
             stepNumber: history.length,
             xIsNext: !this.state.xIsNext,
+        });
+    }
+
+    changeSortOrder() {
+        this.setState({
+            historyOrder: this.state.historyOrder === 'a' ? 'd' : 'a'
         });
     }
 
