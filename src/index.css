@@ -36,6 +36,14 @@ ol, ul {
   outline: none;
 }
 
+.cell-win {
+  background: gold;
+}
+
+.cell-current {
+  text-shadow: 0 0 3px blueviolet;
+}
+
 .kbd-navigation .square:focus {
   background: #ddd;
 }
@@ -62,10 +70,6 @@ ol, ul {
   /*border: blueviolet 2px solid;*/
   box-shadow: 0 0 5px blueviolet;
   font-weight: bold;
-}
-
-.current-cell {
-  text-shadow: 0 0 3px blueviolet;
 }
 
 .button-sort {
